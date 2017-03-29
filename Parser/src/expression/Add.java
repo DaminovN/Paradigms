@@ -17,7 +17,7 @@ public class Add extends BinaryOperator {
     public int evaluate(int value) {
         return first.evaluate(value) + second.evaluate(value);
     }
-    asdasdasdad
+
     @Override
     public int evaluate(int x, int y, int z)  {
         return first.evaluate(x, y, z) + second.evaluate(x, y, z);
