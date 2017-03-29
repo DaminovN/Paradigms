@@ -3,7 +3,7 @@
  */
 package expression;
 public class Divide extends BinaryOperator {
-    public Divide( AbstractExpression frst, AbstractExpression scnd ) {
+    public Divide( AnyExpression frst, AnyExpression scnd ) {
         first = frst;
         second = scnd;
     }

@@ -3,7 +3,7 @@
  */
 package expression;
 public class Multiply extends BinaryOperator {
-    public Multiply( AbstractExpression frst, AbstractExpression scnd ) {
+    public Multiply( AnyExpression frst, AnyExpression scnd ) {
         first = frst;
         second = scnd;
     }

@@ -4,7 +4,7 @@
 package expression;
 
 public class Add extends BinaryOperator {
-    public Add( AbstractExpression frst, AbstractExpression scnd ) {
+    public Add( AnyExpression frst, AnyExpression scnd ) {
         first = frst;
         second = scnd;
     }

@@ -9,14 +9,14 @@ public class ExpressionParser implements Parser {
     private String expression;
     private int pointer;
 
-    public AbstractExpression parse(String expression) {
+    public AnyExpression parse(String expression) {
         pointer = 0;
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
         return addOrSub();
     }
 
-    private AbstractExpression addOrSub() {
-        AbstractExpression ans = mulOrDiv();
+    private AnyExpression addOrSub() {
+        AnyExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '+') {
                 pointer++;
@@ -31,8 +31,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AbstractExpression mulOrDiv() {
-        AbstractExpression ans = unaryOperator();
+    private AnyExpression mulOrDiv() {
+        AnyExpression ans = unaryOperator();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '*') {
                 pointer++;
@@ -47,8 +47,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AbstractExpression constOrVar() {
-        AbstractExpression ans;
+    private AnyExpression constOrVar() {
+        AnyExpression ans;
         if (Character.isAlphabetic(expression.charAt(pointer))) {
             ans = new Variable(Character.toString(expression.charAt(pointer)));
             pointer++;
@@ -63,8 +63,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AbstractExpression unaryOperator() {
-        AbstractExpression ans;
+    private AnyExpression unaryOperator() {
+        AnyExpression ans;
         if (expression.charAt(pointer) == '(') {
             pointer++;
             ans = addOrSub();

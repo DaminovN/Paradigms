@@ -2,7 +2,7 @@
  * Created by HP on 22.03.2017.
  */
 package expression;
-public class Const extends AbstractExpression {
+public class Const implements AnyExpression {
     double value;
     public Const(double val) {
         value = val;

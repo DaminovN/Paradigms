@@ -2,7 +2,7 @@
  * Created by HP on 22.03.2017.
  */
 package expression;
-public class Variable extends AbstractExpression {
+public class Variable implements AnyExpression {
     String name;
     public Variable(String nm) {
         name = nm;

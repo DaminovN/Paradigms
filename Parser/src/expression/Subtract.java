@@ -3,7 +3,7 @@
  */
 package expression;
 public class Subtract extends BinaryOperator {
-    public Subtract(AbstractExpression frst, AbstractExpression scnd) {
+    public Subtract(AnyExpression frst, AnyExpression scnd) {
         first = frst;
         second = scnd;
     }
