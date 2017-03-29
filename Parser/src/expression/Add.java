@@ -8,7 +8,6 @@ public class Add extends BinaryOperator {
         first = frst;
         second = scnd;
     }
-
     @Override
     public double evaluate(double val)  {
         return first.evaluate(val) + second.evaluate(val);
