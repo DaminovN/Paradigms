@@ -1,23 +1,28 @@
 /**
  * Created by HP on 27.02.2017.
  */
+// INV: ((size > 0 && a_0, a_1 ... a_(size-1) ! null) || size == 0)
 public class ArrayQueueModule {
-    private static int end = 0;
     private static int start = 0;
     private static int size = 0;
-    private static Object[] elements = new Object[1];
+    private static Object[] elements = new Object[2];
+
+    // true
+    private static int end() {
+        if( start + size < elements.length ) {
+            return start + size;
+        }
+        else {
+            return (start + size)%elements.length;
+        }
+    }
 
     // Pre: value != null
     // Post: size' = size + 1 && (for all 0 <= i < size: a'[i] == a[i]) && a'[size] = value
     public static void enqueue(Object value) {
         ensureCapacity();
+        elements[end()] = value;
         size++;
-        if (end == elements.length) {
-            end = 0;
-        }
-        elements[end] = value;
-        end++;
-        end %= (elements.length + 1);
     }
 
     // Pre: value != null
@@ -33,7 +38,7 @@ public class ArrayQueueModule {
     // Post: size' = size && (for all 0 <= i < size': a'[i] == a[i]) && res == a'[size - 1]
     public static Object peek() {
         assert size != 0 : "Queue is Empty";
-        return elements[(end - 1 + elements.length) % elements.length];
+        return elements[(end() - 1 + elements.length) % elements.length];
     }
 
     // Pre: size > 0
@@ -41,8 +46,8 @@ public class ArrayQueueModule {
     public static Object remove() {
         assert size != 0 : "Queue is empty";
         size--;
-        end = (end - 1 + elements.length) % elements.length;
-        return elements[end];
+        Object res = elements[end()];
+        return res;
     }
 
     // Post: size' = size && (for all 0 <= i < size': a'[i] == a[i])
@@ -53,11 +58,10 @@ public class ArrayQueueModule {
                 System.arraycopy(elements, 0, newElements, 0, size);
             } else {
                 System.arraycopy(elements, start, newElements, 0, size - start);
-                System.arraycopy(elements, 0, newElements, size - start, end);
+                System.arraycopy(elements, 0, newElements, size - start, end());
             }
             elements = newElements;
             start = 0;
-            end = size;
         }
     }
 
@@ -81,7 +85,6 @@ public class ArrayQueueModule {
     // Post: size' == 0
     public static void clear() {
         start = 0;
-        end = 0;
         size = 0;
     }
 

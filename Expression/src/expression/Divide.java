@@ -4,8 +4,7 @@
 package expression;
 public class Divide extends BinaryOperator {
     public Divide( AnyExpression frst, AnyExpression scnd ) {
-        first = frst;
-        second = scnd;
+        super(frst, scnd);
     }
 
     @Override

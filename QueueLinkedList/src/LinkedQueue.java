@@ -46,5 +46,4 @@ public class LinkedQueue extends AbstractQueue implements Queue {
         head = null;
         tail = null;
     }
-
 }

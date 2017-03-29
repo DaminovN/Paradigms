@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 /**
  * Created by HP on 14.03.2017.
  */
+// INV: ((size > 0 && a_1, a_2 ... a_size ! null) || size == 0)
 public interface Queue {
     // I: size >= 0 && (for all 0 <= i < size: a[i] != null)
 
@@ -30,8 +31,8 @@ public interface Queue {
 
     // Post: size' = size && (for all 0 <= i < size': a'[i] == a[i]) &&
     //                  (for all i | 0 <= i < size, predecate.test(a[i]) == true : a[i] elementof qRes &&
-    //             a[i] + "#" + toString(i) elementof qhlp
-    //                  (for all 0 <= i < size': hlp[i] == a[i] + "#" + toString(i))
+    //             (a[i], i) elementof qhlp
+    //                  (for all 0 <= i < size': hlp[i] == (a[i], i))
     //                  (for all i,j | 0 <= i < j < size_q : hlp.index(qhlp[i]) < hlp.index(qhlp[j]))
     public Queue filter(Predicate<Object> predicate);
 

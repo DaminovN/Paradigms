@@ -24,8 +24,8 @@
       <file leaf-file-name="ParserTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/expression/parser/ParserTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="38" column="21" selection-start-line="38" selection-start-column="21" selection-end-line="38" selection-end-column="21" />
+            <state relative-caret-position="299">
+              <caret line="29" column="24" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -56,7 +56,9 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="46">
               <caret line="4" column="47" selection-start-line="4" selection-start-column="47" selection-end-line="4" selection-end-column="47" />
-              <folding />
+              <folding>
+                <element signature="n#!!doc" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -66,22 +68,40 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="46">
               <caret line="4" column="32" selection-start-line="4" selection-start-column="32" selection-end-line="4" selection-end-column="32" />
-              <folding />
+              <folding>
+                <element signature="n#!!doc" expanded="false" />
+                <element signature="e#157#158#0" expanded="false" />
+                <element signature="e#182#183#0" expanded="false" />
+                <element signature="e#238#239#0" expanded="false" />
+                <element signature="e#264#265#0" expanded="false" />
+                <element signature="e#316#317#0" expanded="false" />
+                <element signature="e#344#345#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExpressionParser.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ExpressionParser.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/expression/parser/ExpressionParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
+            <state relative-caret-position="552">
+              <caret line="26" column="20" selection-start-line="26" selection-start-column="20" selection-end-line="26" selection-end-column="20" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Add.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Parser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/expression/parser/Parser.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="5" column="10" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Add.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/expression/Add.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="391">
@@ -233,7 +253,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ArrayQueueDeque" />
   </component>
   <component name="RunManager" selected="Application.ParserTest">
     <configuration default="false" name="ParserTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -538,7 +558,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963374" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32963374" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963374" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973767" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -605,7 +625,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="46">
           <caret line="4" column="47" selection-start-line="4" selection-start-column="47" selection-end-line="4" selection-end-column="47" />
-          <folding />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -613,7 +635,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="46">
           <caret line="4" column="32" selection-start-line="4" selection-start-column="32" selection-end-line="4" selection-end-column="32" />
-          <folding />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#157#158#0" expanded="false" />
+            <element signature="e#182#183#0" expanded="false" />
+            <element signature="e#238#239#0" expanded="false" />
+            <element signature="e#264#265#0" expanded="false" />
+            <element signature="e#316#317#0" expanded="false" />
+            <element signature="e#344#345#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -686,7 +716,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="46">
           <caret line="4" column="47" selection-start-line="4" selection-start-column="47" selection-end-line="4" selection-end-column="47" />
-          <folding />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -694,15 +726,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="46">
           <caret line="4" column="32" selection-start-line="4" selection-start-column="32" selection-end-line="4" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/expression/parser/ExpressionParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="14" column="20" selection-start-line="14" selection-start-column="20" selection-end-line="14" selection-end-column="20" />
-          <folding />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+            <element signature="e#157#158#0" expanded="false" />
+            <element signature="e#182#183#0" expanded="false" />
+            <element signature="e#238#239#0" expanded="false" />
+            <element signature="e#264#265#0" expanded="false" />
+            <element signature="e#316#317#0" expanded="false" />
+            <element signature="e#344#345#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -724,14 +756,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/expression/parser/ParserTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="38" column="21" selection-start-line="38" selection-start-column="21" selection-end-line="38" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/expression/AnyExpression.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="92">
@@ -744,6 +768,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/expression/parser/ParserTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="29" column="24" selection-start-line="29" selection-start-column="24" selection-end-line="29" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/expression/parser/Parser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="10" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/expression/parser/ExpressionParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="552">
+          <caret line="26" column="20" selection-start-line="26" selection-start-column="20" selection-end-line="26" selection-end-column="20" />
           <folding />
         </state>
       </provider>

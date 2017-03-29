@@ -4,9 +4,8 @@
 package expression;
 
 public class Add extends BinaryOperator {
-    public Add( AnyExpression frst, AnyExpression scnd ) {
-        first = frst;
-        second = scnd;
+    public Add(AnyExpression frst, AnyExpression scnd) {
+        super(frst, scnd);
     }
 
     @Override

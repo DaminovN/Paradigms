@@ -4,8 +4,7 @@
 package expression;
 public class Subtract extends BinaryOperator {
     public Subtract( AnyExpression frst, AnyExpression scnd ) {
-        first = frst;
-        second = scnd;
+        super(frst, scnd);
     }
 
     @Override
