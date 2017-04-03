@@ -12,7 +12,7 @@ public class ExpressionParser implements Parser {
     public TripleExpression parse(String expression) {
         pointer = 0;
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
-        return addOrSub();
+        return shifts();
     }
 
     private TripleExpression shifts() {
@@ -25,7 +25,11 @@ public class ExpressionParser implements Parser {
                 } else if (expression.charAt(pointer) == '>' && expression.charAt(pointer + 1) == '>') {
                     pointer += 2;
                     ans = new ShiftRight(ans, addOrSub());
+                } else {
+                    break;
                 }
+            } else {
+                break;
             }
         }
         return ans;
@@ -83,13 +87,29 @@ public class ExpressionParser implements Parser {
         TripleExpression ans;
         if (expression.charAt(pointer) == '(') {
             pointer++;
-            ans = addOrSub();
+            ans = shifts();
             assert expression.charAt(pointer) == ')' : "Parse Problem";
             pointer++;
         } else if (expression.charAt(pointer) == '-') {
             pointer++;
             ans = new Multiply(new Const(-1), unaryOperator());
-        } else {
+        } else if (pointer + 2 < expression.length() && expression.substring(pointer, pointer + 3).equals("abs")) {
+            pointer += 3;
+            if (!Character.isDigit(expression.charAt(pointer)) && expression.charAt(pointer) != 'x'
+                    && expression.charAt(pointer) != 'y' && expression.charAt(pointer) != 'z') {
+                ans = new Abs(unaryOperator());
+            } else {
+                ans = new Abs(constOrVar());
+            }
+        } else if (pointer + 5 < expression.length() && expression.substring(pointer, pointer + 6).equals("square")) {
+            pointer += 6;
+            if (!Character.isDigit(expression.charAt(pointer)) && expression.charAt(pointer) != 'x'
+                    && expression.charAt(pointer) != 'y' && expression.charAt(pointer) != 'z') {
+                ans = new Square(unaryOperator());
+            } else {
+                ans = new Square(constOrVar());
+            }
+        } else{
             ans = constOrVar();
         }
         return ans;

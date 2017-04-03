@@ -5,8 +5,7 @@ package expression;
  */
 public class ShiftRight extends BinaryOperator {
     public ShiftRight( TripleExpression frst, TripleExpression scnd ) {
-        first = frst;
-        second = scnd;
+        super(frst,scnd);
     }
 
     @Override

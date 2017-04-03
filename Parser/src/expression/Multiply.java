@@ -4,8 +4,7 @@
 package expression;
 public class Multiply extends BinaryOperator {
     public Multiply( TripleExpression frst, TripleExpression scnd ) {
-        first = frst;
-        second = scnd;
+        super(frst,scnd);
     }
 
     @Override

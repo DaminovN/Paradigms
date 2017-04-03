@@ -5,8 +5,7 @@ package expression;
 
 public class Add extends BinaryOperator {
     public Add( TripleExpression frst, TripleExpression scnd ) {
-        first = frst;
-        second = scnd;
+        super(frst,scnd);
     }
 
     @Override

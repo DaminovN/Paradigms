@@ -6,8 +6,9 @@ import expression.TripleExpression;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
+import java.util.function.LongBinaryOperator;
+import java.util.function.LongSupplier;
+import java.util.function.LongUnaryOperator;
 
 import static expression.Util.*;
 
@@ -16,15 +17,24 @@ import static expression.Util.*;
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
 public class ParserTest {
-    protected final List<Op<UnaryOperator<Long>>> unary = new ArrayList<>();
-    protected final List<List<Op<BinaryOperator<Long>>>> levels = new ArrayList<>();
-    protected List<Op<TExpression>> tests;
+    private final static int D = 5;
 
-    public enum Reason {
-        DBZ, OVERFLOW
+    private final static List<Integer> TEST_VALUES = new ArrayList<>();
+    static {
+        addRange(TEST_VALUES, D, D);
+        addRange(TEST_VALUES, D, -D);
     }
 
+
+    protected final List<Op<LongUnaryOperator>> unary = new ArrayList<>();
+    protected final List<List<Op<LongBinaryOperator>>> levels = new ArrayList<>();
+    protected List<Op<TExpression>> tests;
+
+    protected long total;
+
     protected ParserTest() {
+        checkAssert(getClass());
+
         unary.add(op("-", a -> -a));
 
         levels.add(list(
@@ -33,7 +43,7 @@ public class ParserTest {
         ));
         levels.add(list(
                 op("*", (a, b) -> a * b),
-                op("/", (a, b) -> b == 0 ? null : a / b)
+                op("/", (a, b) -> b == 0 ? error(DBZ) : a / b)
         ));
 
         tests = list(
@@ -45,34 +55,37 @@ public class ParserTest {
                 op("2-y", (x, y, z) -> 2 - y),
                 op("  3*  z  ", (x, y, z) -> 3 * z),
                 op("x/  -  2", (x, y, z) -> -x / 2),
-                op("x*y+(z-1   )/10", (x, y, z) -> x * y + (z - 1) / 10),
+                op("x*y+(z-1   )/10", (x, y, z) -> x * y + (int) (z - 1) / 10),
                 op("-(-(-\t\t-5 + 16   *x*y) + 1 * z) -(((-11)))", (x, y, z) -> -(-(5 + 16 * x * y) + z) + 11),
                 op("" + Integer.MAX_VALUE, (x, y, z) -> (long) Integer.MAX_VALUE),
                 op("" + Integer.MIN_VALUE, (x, y, z) -> (long) Integer.MIN_VALUE),
                 op("x--y--z", (x, y, z) -> x + y + z),
                 op("((2+2))-0/(--2)*555", (x, y, z) -> 4L),
                 op("x-x+y-y+z-(z)", (x, y, z) -> 0L),
-                op(repeat("(", 500) + "x + y + (-10*-z)" + repeat(")", 500), (x, y, z) -> x + y + 10 * z)
+                op(repeat("(", 500) + "x + y + (-10*-z)" + repeat(")", 500), (x, y, z) -> x + y + 10 * z),
+                op("x / y / z", (x, y, z) -> y == 0 || z == 0 ? error(DBZ) : (int) x / (int) y / z)
         );
     }
 
-    public interface TExpression {
-        Long evaluate(long x, long y, long z);
+    public static void main(final String[] args) {
+        new ParserTest().run();
     }
 
-    public static void main(final String[] args) {
-        checkAssert(ParserTest.class);
-        new ParserTest().test();
+    protected void run() {
+        test();
+
+        System.out.println(total);
+        System.out.println("OK");
     }
 
     protected void test() {
         for (final Op<TExpression> test : tests) {
             System.out.println("Testing: " + test.name);
-            final TripleExpression expression = parse(test.name);
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    for (int k = 0; k < 10; k++) {
-                        check(new int[]{i, j, k}, expression, lift(test.f.evaluate(i, j, k)));
+            final TripleExpression expression = parse(test.name, true);
+            for (final Integer x : TEST_VALUES) {
+                for (final Integer y : TEST_VALUES) {
+                    for (final Integer z : TEST_VALUES) {
+                        check(new int[]{x, y, z}, expression, eval(() -> test.f.evaluate(x, y, z)));
                     }
                 }
             }
@@ -80,20 +93,30 @@ public class ParserTest {
 
         testRandom(1, 2000, (v, i) -> generate(v, i / 5 + 2));
         testRandom(2, 777, (v, i) -> genExpression(1, i / 25 / levels.size() + 1, v, 0));
-        System.out.println(total);
-
-        System.out.println("OK");
     }
 
-    protected TripleExpression parse(final String expression) {
+    private Either<Reason, Integer> eval(final LongSupplier supplier) {
         try {
-            return new ExpressionParser().parse(expression);
+            return lift(supplier.getAsLong());
+        } catch (final ExpException e) {
+            return Either.left(e.reason);
+        }
+    }
+
+    protected TripleExpression parse(final String expression, final boolean reparse) {
+        try {
+            final ExpressionParser parser = new ExpressionParser();
+            if (reparse) {
+                parser.parse(expression);
+                total++;
+            }
+            return parser.parse(expression);
         } catch (final Exception e) {
             throw new AssertionError("Parser failed", e);
         }
     }
 
-    public void testRandom(final int seq, final int n, final BiFunction<int[], Integer, Test> f) {
+    protected void testRandom(final int seq, final int n, final BiFunction<int[], Integer, Test> f) {
         System.out.println("Testing random tests #" + seq);
         for (int i = 0; i < n; i++) {
             if (i % 100 == 0) {
@@ -104,15 +127,13 @@ public class ParserTest {
             final Test test = f.apply(vars, i);
             try {
                 total += test.expr.length();
-                check(vars, parse(test.expr), test.answer);
+                check(vars, parse(test.expr, false), test.answer);
             } catch (final Throwable e) {
                 System.out.println("Failed test: " + test.expr);
                 throw e;
             }
         }
     }
-
-    static long total;
 
     private void check(final int[] vars, final TripleExpression expression, final Either<Reason, Integer> answer) {
         try {
@@ -121,7 +142,7 @@ public class ParserTest {
             assertEquals(String.format("f(%d, %d, %d)\n%s", vars[0], vars[1], vars[2], expression), actual, (int) answer.getRight());
         } catch (final Exception e) {
             if (!answer.isLeft()) {
-                throw new AssertionError(String.format("No error expected for x = %d, y=%d, z=%d", vars[0], vars[1], vars[2]), e);
+                throw new AssertionError(String.format("No error expected for x=%d, y=%d, z=%d", vars[0], vars[1], vars[2]), e);
             }
         }
     }
@@ -176,17 +197,17 @@ public class ParserTest {
         return new Test("("  + t.expr + ")", t.answer);
     }
 
-    private Test binary(final List<Op<BinaryOperator<Long>>> ops, final Test t1, final Test t2) {
-        final Op<BinaryOperator<Long>> op = random(ops);
+    private Test binary(final List<Op<LongBinaryOperator>> ops, final Test t1, final Test t2) {
+        final Op<LongBinaryOperator> op = random(ops);
         return new Test(
                 t1.expr + op.name + t2.expr,
-                t1.answer.flatMapRight(a -> t2.answer.mapRight(b -> op.f.apply((long) a, (long) b)).flatMapRight(this::lift))
+                t1.answer.flatMapRight(a -> t2.answer.flatMapRight(b -> eval(() -> op.f.applyAsLong(a, b))))
         );
     }
 
     private Test unary(final Test arg) {
-        final Op<UnaryOperator<Long>> op = random(unary);
-        return new Test(op.name + " " + arg.expr, arg.answer.mapRight(a -> op.f.apply((long) a)).flatMapRight(this::lift));
+        final Op<LongUnaryOperator> op = random(unary);
+        return new Test(op.name + " " + arg.expr, arg.answer.flatMapRight(a -> eval(() -> op.f.applyAsLong(a))));
     }
 
     private Test genValue(final int depth, final int coefficient, final int[] vars) {
@@ -201,11 +222,11 @@ public class ParserTest {
         return randomInt(depth + coefficient) < coefficient;
     }
 
-    protected Either<Reason, Integer> lift(final Long value) {
-        return value != null ? Either.right(value.intValue()) : Either.left(Reason.DBZ);
+    protected Either<Reason, Integer> lift(final long value) {
+        return Either.right((int) value);
     }
 
-    public static class Test {
+    protected static class Test {
         final String expr;
         final Either<Reason, Integer> answer;
 
@@ -213,5 +234,32 @@ public class ParserTest {
             this.expr = expr;
             this.answer = answer;
         }
+    }
+
+    protected static class Reason {
+        private final String description;
+
+        public Reason(final String description) {
+            this.description = description;
+        }
+    }
+
+    public static final Reason DBZ = new Reason("Division by zero");
+
+    public interface TExpression {
+        long evaluate(long x, long y, long z);
+    }
+
+    public static class ExpException extends RuntimeException {
+        private final Reason reason;
+
+        public ExpException(final Reason reason) {
+            super(reason.description);
+            this.reason = reason;
+        }
+    }
+
+    public static long error(final Reason reason) {
+        throw new ExpException(reason);
     }
 }

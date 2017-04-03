@@ -3,7 +3,7 @@
  */
 package expression;
 public class Variable implements TripleExpression {
-    String name;
+    private String name;
     public Variable(String nm) {
         name = nm;
     }
