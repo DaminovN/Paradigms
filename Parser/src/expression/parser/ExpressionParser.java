@@ -15,6 +15,17 @@ public class ExpressionParser implements Parser {
         return addOrSub();
     }
 
+    private AnyExpression shifts() {
+        AnyExpression and = addOrSub();
+        while (pointer < expression.length()) {
+            if (pointer + 1 < expression.length()) {
+                if (expression.charAt(pointer) == '<' && expression.charAt(pointer + 1) == '<') {
+
+                }
+            }
+        }
+    }
+
     private AnyExpression addOrSub() {
         AnyExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
