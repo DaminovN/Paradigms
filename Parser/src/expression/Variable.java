@@ -2,20 +2,10 @@
  * Created by HP on 22.03.2017.
  */
 package expression;
-public class Variable implements AnyExpression {
+public class Variable implements TripleExpression {
     String name;
     public Variable(String nm) {
         name = nm;
-    }
-
-    @Override
-    public double evaluate(double val) {
-        return val;
-    }
-
-    @Override
-    public int evaluate(int value) {
-        return value;
     }
 
     @Override

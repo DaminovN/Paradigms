@@ -3,19 +3,9 @@
  */
 package expression;
 public class Multiply extends BinaryOperator {
-    public Multiply( AnyExpression frst, AnyExpression scnd ) {
+    public Multiply( TripleExpression frst, TripleExpression scnd ) {
         first = frst;
         second = scnd;
-    }
-
-    @Override
-    public double evaluate(double val)  {
-        return first.evaluate(val) * second.evaluate(val);
-    }
-
-    @Override
-    public int evaluate(int value) {
-        return first.evaluate(value) * second.evaluate(value);
     }
 
     @Override

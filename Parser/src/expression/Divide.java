@@ -3,19 +3,9 @@
  */
 package expression;
 public class Divide extends BinaryOperator {
-    public Divide( AnyExpression frst, AnyExpression scnd ) {
+    public Divide( TripleExpression frst, TripleExpression scnd ) {
         first = frst;
         second = scnd;
-    }
-
-    @Override
-    public double evaluate(double val)  {
-        return first.evaluate(val) / second.evaluate(val);
-    }
-
-    @Override
-    public int evaluate(int value) {
-        return first.evaluate(value) / second.evaluate(value);
     }
 
     @Override

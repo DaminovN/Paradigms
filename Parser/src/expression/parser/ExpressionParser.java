@@ -9,25 +9,30 @@ public class ExpressionParser implements Parser {
     private String expression;
     private int pointer;
 
-    public AnyExpression parse(String expression) {
+    public TripleExpression parse(String expression) {
         pointer = 0;
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
         return addOrSub();
     }
 
-    private AnyExpression shifts() {
-        AnyExpression and = addOrSub();
+    private TripleExpression shifts() {
+        TripleExpression ans = addOrSub();
         while (pointer < expression.length()) {
             if (pointer + 1 < expression.length()) {
                 if (expression.charAt(pointer) == '<' && expression.charAt(pointer + 1) == '<') {
-
+                    pointer += 2;
+                    ans = new ShiftLeft(ans, addOrSub());
+                } else if (expression.charAt(pointer) == '>' && expression.charAt(pointer + 1) == '>') {
+                    pointer += 2;
+                    ans = new ShiftRight(ans, addOrSub());
                 }
             }
         }
+        return ans;
     }
 
-    private AnyExpression addOrSub() {
-        AnyExpression ans = mulOrDiv();
+    private TripleExpression addOrSub() {
+        TripleExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '+') {
                 pointer++;
@@ -42,8 +47,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AnyExpression mulOrDiv() {
-        AnyExpression ans = unaryOperator();
+    private TripleExpression mulOrDiv() {
+        TripleExpression ans = unaryOperator();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '*') {
                 pointer++;
@@ -58,8 +63,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AnyExpression constOrVar() {
-        AnyExpression ans;
+    private TripleExpression constOrVar() {
+        TripleExpression ans;
         if (Character.isAlphabetic(expression.charAt(pointer))) {
             ans = new Variable(Character.toString(expression.charAt(pointer)));
             pointer++;
@@ -74,8 +79,8 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private AnyExpression unaryOperator() {
-        AnyExpression ans;
+    private TripleExpression unaryOperator() {
+        TripleExpression ans;
         if (expression.charAt(pointer) == '(') {
             pointer++;
             ans = addOrSub();
