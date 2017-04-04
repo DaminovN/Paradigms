@@ -18,7 +18,7 @@ public class ExpressionParser implements Parser {
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
         TripleExpression result = addOrSub();
         if (pointer != this.expression.length()) {
-            throw new ParsingException();
+            throw new ParsingException(pointer);
         }
         return result;
     }
@@ -55,10 +55,14 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private TripleExpression constOrVar() {
+    private TripleExpression constOrVar() throws ParsingException {
         TripleExpression ans;
         if (Character.isAlphabetic(expression.charAt(pointer))) {
-            ans = new Variable(Character.toString(expression.charAt(pointer)));
+            try {
+                ans = new Variable(Character.toString(expression.charAt(pointer)));
+            } catch (Exception e) {
+                throw new ParsingException(pointer);
+            }
             pointer++;
         } else {
             int sp = pointer;

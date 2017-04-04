@@ -9,7 +9,7 @@ public class Variable implements TripleExpression {
     }
 
     @Override
-    public int evaluate(int x, int y, int z) throws Exception {
+    public int evaluate(int x, int y, int z) throws ParsingException {
         if (name.equals("x")) {
             return x;
         } else if (name.equals("y")) {

@@ -7,6 +7,7 @@ public class ParsingException extends Exception {
     public ParsingException(int a) {
         super("Parsing Exception in position " + a);
     }
+
     public ParsingException() {
         super("Parsing Exception");
     }
