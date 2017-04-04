@@ -4,6 +4,7 @@
 package expression.parser;
 
 import expression.*;
+import expression.exceptions.Parser;
 
 import java.util.ArrayList;
 import java.util.function.UnaryOperator;
@@ -12,41 +13,25 @@ public class ExpressionParser implements Parser {
     private String expression;
     private int pointer;
 
-    public TripleExpression parse(String expression) {
+    public TripleExpression parse(String expression) throws Exception {
         pointer = 0;
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
-        return shifts();
-    }
-
-    private TripleExpression shifts() {
-        TripleExpression ans = addOrSub();
-        while (pointer < expression.length()) {
-            if (pointer + 1 < expression.length()) {
-                if (expression.charAt(pointer) == '<' && expression.charAt(pointer + 1) == '<') {
-                    pointer += 2;
-                    ans = new ShiftLeft(ans, addOrSub());
-                } else if (expression.charAt(pointer) == '>' && expression.charAt(pointer + 1) == '>') {
-                    pointer += 2;
-                    ans = new ShiftRight(ans, addOrSub());
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
+        TripleExpression result = addOrSub();
+        if (pointer != this.expression.length()) {
+            throw new ParsingException();
         }
-        return ans;
+        return result;
     }
 
-    private TripleExpression addOrSub() {
+    private TripleExpression addOrSub() throws Exception {
         TripleExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '+') {
                 pointer++;
-                ans = new Add(ans, mulOrDiv());
+                ans = new CheckedAdd(ans, mulOrDiv());
             } else if (expression.charAt(pointer) == '-') {
                 pointer++;
-                ans = new Subtract(ans, mulOrDiv());
+                ans = new CheckedSubtract(ans, mulOrDiv());
             } else {
                 break;
             }
@@ -54,15 +39,15 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private TripleExpression mulOrDiv() {
+    private TripleExpression mulOrDiv() throws Exception {
         TripleExpression ans = unaryOperator();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '*') {
                 pointer++;
-                ans = new Multiply(ans, unaryOperator());
+                ans = new CheckedMultiply(ans, unaryOperator());
             } else if (expression.charAt(pointer) == '/') {
                 pointer++;
-                ans = new Divide(ans, unaryOperator());
+                ans = new CheckedDivide(ans, unaryOperator());
             } else {
                 break;
             }
@@ -89,7 +74,7 @@ public class ExpressionParser implements Parser {
     }
 
 
-    private String[] functionsName = new String[]{"abs", "square"};
+    /*private String[] functionsName = new String[]{"abs", "square"};
     private ArrayList<UnaryOperator<TripleExpression>> funcApplier = new ArrayList<>();
     {
         funcApplier.add(x -> new Abs(x));
@@ -105,14 +90,16 @@ public class ExpressionParser implements Parser {
             }
         }
         return -1;
-    }
+    }*/
 
 
-    private TripleExpression unaryOperator() {
+    private TripleExpression unaryOperator() throws Exception {
         if (expression.charAt(pointer) == '(') {
             pointer++;
-            TripleExpression ans = shifts();
-            assert expression.charAt(pointer) == ')' : "Parse Problem";
+            TripleExpression ans = addOrSub();
+            if (expression.charAt(pointer) != ')') {
+                throw new ParsingException(pointer);
+            }
             pointer++;
             return ans;
         } else if (expression.charAt(pointer) == '-') {
@@ -120,16 +107,10 @@ public class ExpressionParser implements Parser {
                 return constOrVar();
             } else {
                 pointer++;
-                return new Negate(unaryOperator());
+                return new CheckedNegate(unaryOperator());
             }
         } else {
-            int pos = getFunctionIndex();
-            if (pos != -1) {
-                pointer += functionsName[pos].length();
-                return funcApplier.get(pos).apply(unaryOperator());
-            } else {
-                return constOrVar();
-            }
+            return constOrVar();
         }
     }
 }

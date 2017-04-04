@@ -10,6 +10,6 @@ public class Const implements TripleExpression {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return value;
+        return (int) value;
     }
 }
