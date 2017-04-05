@@ -91,6 +91,7 @@ public class ExpressionParser implements Parser {
 
     private String[] functionsName = new String[]{"abs", "square"};
     private ArrayList<UnaryOperator<TripleExpression>> funcApplier = new ArrayList<>();
+
     {
         funcApplier.add(x -> new Abs(x));
         funcApplier.add(x -> new Square(x));
@@ -106,7 +107,6 @@ public class ExpressionParser implements Parser {
         }
         return -1;
     }
-
 
     private TripleExpression unaryOperator() {
         if (expression.charAt(pointer) == '(') {

@@ -4,12 +4,12 @@
 package expression;
 
 public class Add extends BinaryOperator {
-    public Add( TripleExpression frst, TripleExpression scnd ) {
-        super(frst,scnd);
+    public Add(TripleExpression frst, TripleExpression scnd) {
+        super(frst, scnd);
     }
 
     @Override
-    public int evaluate(int x, int y, int z)  {
+    public int evaluate(int x, int y, int z) {
         return first.evaluate(x, y, z) + second.evaluate(x, y, z);
     }
 }

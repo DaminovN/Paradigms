@@ -1,9 +1,15 @@
 /**
  * Created by HP on 22.03.2017.
  */
+
 package expression;
+
+import expression.TripleExpression;
+import expression.exceptions.*;
+
 public class Variable implements TripleExpression {
     private String name;
+
     public Variable(String nm) {
         name = nm;
     }

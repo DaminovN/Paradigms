@@ -4,7 +4,7 @@
 package expression.parser;
 
 import expression.*;
-import expression.exceptions.Parser;
+import expression.exceptions.*;
 
 import java.util.ArrayList;
 import java.util.function.UnaryOperator;
@@ -13,7 +13,7 @@ public class ExpressionParser implements Parser {
     private String expression;
     private int pointer;
 
-    public TripleExpression parse(String expression) throws Exception {
+    public TripleExpression parse(String expression) throws MyExceptions {
         pointer = 0;
         this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
         TripleExpression result = addOrSub();
@@ -23,7 +23,7 @@ public class ExpressionParser implements Parser {
         return result;
     }
 
-    private TripleExpression addOrSub() throws Exception {
+    private TripleExpression addOrSub() throws MyExceptions {
         TripleExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '+') {
@@ -39,7 +39,7 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private TripleExpression mulOrDiv() throws Exception {
+    private TripleExpression mulOrDiv() throws MyExceptions {
         TripleExpression ans = unaryOperator();
         while (pointer < expression.length()) {
             if (expression.charAt(pointer) == '*') {
@@ -55,16 +55,16 @@ public class ExpressionParser implements Parser {
         return ans;
     }
 
-    private TripleExpression constOrVar() throws ParsingException {
+    private TripleExpression constOrVar() throws MyExceptions {
         TripleExpression ans;
-        if (Character.isAlphabetic(expression.charAt(pointer))) {
+        if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
             try {
                 ans = new Variable(Character.toString(expression.charAt(pointer)));
             } catch (Exception e) {
                 throw new ParsingException(pointer);
             }
             pointer++;
-        } else {
+        } else  if (pointer < expression.length()){
             int sp = pointer;
             if (expression.charAt(pointer) == '-') {
                 pointer++;
@@ -72,7 +72,13 @@ public class ExpressionParser implements Parser {
             while (pointer < expression.length() && Character.isDigit(expression.charAt(pointer))) {
                 pointer++;
             }
-            ans = new Const(Integer.parseInt(expression.substring(sp, pointer)));
+            try {
+                ans = new Const(Integer.parseInt(expression.substring(sp, pointer)));
+            } catch (Exception e) {
+                throw new ParsingException(sp);
+            }
+        } else {
+            throw new ParsingException(pointer);
         }
         return ans;
     }
@@ -97,16 +103,16 @@ public class ExpressionParser implements Parser {
     }*/
 
 
-    private TripleExpression unaryOperator() throws Exception {
-        if (expression.charAt(pointer) == '(') {
+    private TripleExpression unaryOperator() throws MyExceptions {
+        if (pointer < expression.length() && expression.charAt(pointer) == '(') {
             pointer++;
             TripleExpression ans = addOrSub();
-            if (expression.charAt(pointer) != ')') {
+            if (pointer >= expression.length() || expression.charAt(pointer) != ')') {
                 throw new ParsingException(pointer);
             }
             pointer++;
             return ans;
-        } else if (expression.charAt(pointer) == '-') {
+        } else if (pointer < expression.length() && expression.charAt(pointer) == '-') {
             if (pointer + 1 < expression.length() && Character.isDigit(expression.charAt(pointer + 1))) {
                 return constOrVar();
             } else {

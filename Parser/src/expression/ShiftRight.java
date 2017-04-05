@@ -4,8 +4,8 @@ package expression;
  * Created by daminovn on 03.04.2017.
  */
 public class ShiftRight extends BinaryOperator {
-    public ShiftRight( TripleExpression frst, TripleExpression scnd ) {
-        super(frst,scnd);
+    public ShiftRight(TripleExpression frst, TripleExpression scnd) {
+        super(frst, scnd);
     }
 
     @Override

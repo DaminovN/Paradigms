@@ -2,8 +2,10 @@
  * Created by HP on 22.03.2017.
  */
 package expression;
+
 public class Variable implements TripleExpression {
     private String name;
+
     public Variable(String nm) {
         name = nm;
     }

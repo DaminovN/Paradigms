@@ -5,6 +5,7 @@ package expression;
  */
 public class Negate implements TripleExpression {
     private TripleExpression val;
+
     public Negate(TripleExpression value) {
         val = value;
     }
