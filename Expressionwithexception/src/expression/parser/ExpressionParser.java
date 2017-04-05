@@ -15,7 +15,7 @@ public class ExpressionParser implements Parser {
 
     public TripleExpression parse(String expression) throws MyExceptions {
         pointer = 0;
-        this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
+        this.expression = expression/*.replaceAll("\\p{javaWhitespace}", "")*/;
         TripleExpression result = addOrSub();
         if (pointer != this.expression.length()) {
             throw new ParsingException(pointer);
@@ -26,7 +26,9 @@ public class ExpressionParser implements Parser {
     private TripleExpression addOrSub() throws MyExceptions {
         TripleExpression ans = mulOrDiv();
         while (pointer < expression.length()) {
-            if (expression.charAt(pointer) == '+') {
+            if (Character.toString(expression.charAt(pointer)).equals("\\p{javaWhitespace}")) {
+                pointer++;
+            } else if (expression.charAt(pointer) == '+') {
                 pointer++;
                 ans = new CheckedAdd(ans, mulOrDiv());
             } else if (expression.charAt(pointer) == '-') {
@@ -42,7 +44,9 @@ public class ExpressionParser implements Parser {
     private TripleExpression mulOrDiv() throws MyExceptions {
         TripleExpression ans = unaryOperator();
         while (pointer < expression.length()) {
-            if (expression.charAt(pointer) == '*') {
+            if (Character.isWhitespace(expression.charAt(pointer))) {
+                pointer++;
+            } else if (expression.charAt(pointer) == '*') {
                 pointer++;
                 ans = new CheckedMultiply(ans, unaryOperator());
             } else if (expression.charAt(pointer) == '/') {
@@ -57,7 +61,11 @@ public class ExpressionParser implements Parser {
 
     private TripleExpression constOrVar() throws MyExceptions {
         TripleExpression ans;
-        if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
+        if (pointer < expression.length()
+                && Character.isWhitespace(expression.charAt(pointer))) {
+            pointer++;
+            return constOrVar();
+        } else if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
             try {
                 ans = new Variable(Character.toString(expression.charAt(pointer)));
             } catch (Exception e) {
@@ -65,15 +73,27 @@ public class ExpressionParser implements Parser {
             }
             pointer++;
         } else  if (pointer < expression.length()){
-            int sp = pointer;
-            if (expression.charAt(pointer) == '-') {
+            while (pointer < expression.length() && Character.isWhitespace(expression.charAt(pointer))) {
                 pointer++;
             }
-            while (pointer < expression.length() && Character.isDigit(expression.charAt(pointer))) {
+            if (pointer == expression.length()) {
+                throw new ParsingException(pointer);
+            }
+            int sp = pointer;
+            String number = "";
+            if (expression.charAt(pointer) == '-') {
+                pointer++;
+                number = "-";
+            }
+            while (pointer < expression.length() && (Character.isWhitespace(expression.charAt(pointer))
+                    || Character.isDigit(expression.charAt(pointer)))) {
+                if (Character.isDigit(expression.charAt(pointer))) {
+                    number += expression.charAt(pointer);
+                }
                 pointer++;
             }
             try {
-                ans = new Const(Integer.parseInt(expression.substring(sp, pointer)));
+                ans = new Const(Integer.parseInt(number));
             } catch (Exception e) {
                 throw new ParsingException(sp);
             }
@@ -84,11 +104,11 @@ public class ExpressionParser implements Parser {
     }
 
 
-    /*private String[] functionsName = new String[]{"abs", "square"};
+    private String[] functionsName = new String[]{"abs", "sqrt"};
     private ArrayList<UnaryOperator<TripleExpression>> funcApplier = new ArrayList<>();
     {
-        funcApplier.add(x -> new Abs(x));
-        funcApplier.add(x -> new Square(x));
+        funcApplier.add(x -> new CheckedAbs(x));
+        funcApplier.add(x -> new CheckedSqrt(x));
     }
 
     private int getFunctionIndex() {
@@ -100,27 +120,46 @@ public class ExpressionParser implements Parser {
             }
         }
         return -1;
-    }*/
+    }
 
 
     private TripleExpression unaryOperator() throws MyExceptions {
-        if (pointer < expression.length() && expression.charAt(pointer) == '(') {
+        if (pointer < expression.length()
+                && Character.isWhitespace(expression.charAt(pointer))) {
+            pointer++;
+            return unaryOperator();
+        } else if (pointer < expression.length() && expression.charAt(pointer) == '(') {
             pointer++;
             TripleExpression ans = addOrSub();
+            while (pointer < expression.length()
+                    && Character.isWhitespace(expression.charAt(pointer))) {
+                pointer++;
+            }
             if (pointer >= expression.length() || expression.charAt(pointer) != ')') {
                 throw new ParsingException(pointer);
             }
             pointer++;
             return ans;
         } else if (pointer < expression.length() && expression.charAt(pointer) == '-') {
-            if (pointer + 1 < expression.length() && Character.isDigit(expression.charAt(pointer + 1))) {
+            int sp = pointer;
+            while (sp + 1 < expression.length()
+                    && Character.isWhitespace(expression.charAt(sp + 1))) {
+                sp++;
+            }
+            if (sp + 1 < expression.length() && Character.isDigit(expression.charAt(sp + 1))) {
                 return constOrVar();
             } else {
                 pointer++;
                 return new CheckedNegate(unaryOperator());
             }
         } else {
-            return constOrVar();
+            int pos = getFunctionIndex();
+            if (pos != -1) {
+                pointer += functionsName[pos].length();
+                return funcApplier.get(pos).apply(unaryOperator());
+            } else {
+                return constOrVar();
+            }
         }
     }
 }

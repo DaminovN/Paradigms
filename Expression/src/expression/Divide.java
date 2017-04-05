@@ -2,13 +2,14 @@
  * Created by HP on 22.03.2017.
  */
 package expression;
+
 public class Divide extends BinaryOperator {
-    public Divide( AnyExpression frst, AnyExpression scnd ) {
+    public Divide(AnyExpression frst, AnyExpression scnd) {
         super(frst, scnd);
     }
 
     @Override
-    public double evaluate(double val)  {
+    public double evaluate(double val) {
         return first.evaluate(val) / second.evaluate(val);
     }
 
@@ -18,7 +19,7 @@ public class Divide extends BinaryOperator {
     }
 
     @Override
-    public int evaluate(int x, int y, int z)  {
+    public int evaluate(int x, int y, int z) {
         return first.evaluate(x, y, z) / second.evaluate(x, y, z);
     }
 }

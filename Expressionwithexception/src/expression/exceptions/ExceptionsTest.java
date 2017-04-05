@@ -1,6 +1,8 @@
 package expression.exceptions;
 
 import expression.*;
+import expression.TripleExpression;
+import expression.Variable;
 import expression.parser.*;
 import expression.parser.ParserTest;
 
@@ -36,17 +38,20 @@ public class ExceptionsTest extends ParserTest {
 
     private int subtests = 0;
 
-    private final List<Op<String>> parsingTest = Arrays.asList(
+    protected final List<Op<String>> parsingTest = new ArrayList<>(Arrays.asList(
             op("No first argument", "* y * z"),
             op("No middle argument", "x *  * z"),
             op("No last argument", "x * y * "),
+            op("No first argument'", "1 + (* y * z) + 2"),
+            op("No middle argument'", "1 + (x *  / 9) + 3"),
+            op("No last argument'", "1 + (x * y - ) + 3"),
             op("No opening parenthesis", "x * y)"),
             op("No closing parenthesis", "(x * y"),
             op("Start symbol", "@x * y"),
             op("Middle symbol", "x @ * y"),
             op("End symbol", "x * y@"),
             op("Constant overflow", "-1000000000000000000000")
-    );
+    ));
 
     public static void main(final String[] args) {
         new ExceptionsTest().run();
@@ -54,6 +59,7 @@ public class ExceptionsTest extends ParserTest {
 
     private void testParsingErrors() {
         for (final Op<String> op : parsingTest) {
+            total++;
             try {
                 new ExpressionParser().parse(op.f);
                 assert false : "Successfully parsed " + op.f;

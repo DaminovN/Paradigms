@@ -12,7 +12,7 @@ public class ExpressionTest {
         testExpression("x", new Variable("x"), x -> x);
         testExpression("x+2", new Add(new Variable("x"), new Const(2)), x -> x + 2);
         testExpression("2-x", new Subtract(new Const(2), new Variable("x")), x -> 2 - x);
-        testExpression("3*x", new Multiply(new Const(3), new Variable("x")), x -> 3*x);
+        testExpression("3*x", new Multiply(new Const(3), new Variable("x")), x -> 3 * x);
         testExpression("x/-2", new Divide(new Variable("x"), new Const(-2)), x -> -x / 2);
         testExpression(
                 "x*x+(x-1)/10",

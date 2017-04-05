@@ -10,12 +10,13 @@ import expression.exceptions.*;
 public class Variable implements TripleExpression {
     private String name;
 
-    public Variable(String nm) {
+    public Variable(String nm) throws ParsingException {
         name = nm;
     }
 
     @Override
     public int evaluate(int x, int y, int z) throws ParsingException {
+        System.out.println(name + "HERE");
         if (name.equals("x")) {
             return x;
         } else if (name.equals("y")) {
