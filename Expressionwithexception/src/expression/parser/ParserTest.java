@@ -200,7 +200,7 @@ public class ParserTest {
     private Test binary(final List<Op<LongBinaryOperator>> ops, final Test t1, final Test t2) {
         final Op<LongBinaryOperator> op = random(ops);
         return new Test(
-                t1.expr + op.name + t2.expr,
+                t1.expr + " " + op.name + " " + t2.expr,
                 t1.answer.flatMapRight(a -> t2.answer.flatMapRight(b -> eval(() -> op.f.applyAsLong(a, b))))
         );
     }

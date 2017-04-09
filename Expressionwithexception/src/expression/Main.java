@@ -9,10 +9,9 @@ import expression.parser.ExpressionParser;
 
 public class Main {
     public static void main(String[] args) throws MyExceptions {
-
-//        String expression = "(square(-1305951089)*square1929567999)";
-        String expression = "2 * A 2";
-        // answer = -788641311
-        System.out.println(new ExpressionParser().parse(expression).evaluate(2, 0, 0));
+        final Parser parser = new ExpressionParser();
+        String expression = "5max y";
+        //337591585
+        System.out.println(new ExpressionParser().parse(expression).evaluate(0, 0, 0));
     }
 }

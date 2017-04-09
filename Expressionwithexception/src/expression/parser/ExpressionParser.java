@@ -7,6 +7,7 @@ import expression.*;
 import expression.exceptions.*;
 
 import java.util.ArrayList;
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 public class ExpressionParser implements Parser {
@@ -15,90 +16,99 @@ public class ExpressionParser implements Parser {
 
     public TripleExpression parse(String expression) throws MyExceptions {
         pointer = 0;
-        this.expression = expression/*.replaceAll("\\p{javaWhitespace}", "")*/;
-        TripleExpression result = addOrSub();
+        //this.expression = expression.replaceAll("\\p{javaWhitespace}", "");
+        this.expression = expression;
+        TripleExpression result = minOrMax();
         if (pointer != this.expression.length()) {
             throw new ParsingException(pointer);
         }
         return result;
     }
 
-    private TripleExpression addOrSub() throws MyExceptions {
-        TripleExpression ans = mulOrDiv();
+    private String[] operations = new String[]{"minmax", "+-", "*/"};
+
+    private int getOperator(int id, int len) {
+        if (pointer + len <= expression.length()
+                && expression.substring(pointer, pointer + len).equals(operations[id].substring(0, len))) {
+            return id * 2 + 0;
+        } else if (pointer + len <= expression.length()
+                && expression.substring(pointer, pointer + len).equals(operations[id].substring(len, len + len))) {
+            return id * 2 + 1;
+        } else {
+            return -1;
+        }
+    }
+
+    private ArrayList<BiFunction<TripleExpression, TripleExpression, TripleExpression>> opApplier = new ArrayList<>();
+
+    {
+        opApplier.add((x, y) -> new Min(x, y));
+        opApplier.add((x, y) -> new Max(x, y));
+        opApplier.add((x, y) -> new CheckedAdd(x, y));
+        opApplier.add((x, y) -> new CheckedSubtract(x, y));
+        opApplier.add((x, y) -> new CheckedMultiply(x, y));
+        opApplier.add((x, y) -> new CheckedDivide(x, y));
+    }
+
+    private TripleExpression minOrMax() throws MyExceptions {
+        TripleExpression ans = addOrSub();
         while (pointer < expression.length()) {
-            if (Character.toString(expression.charAt(pointer)).equals("\\p{javaWhitespace}")) {
+            if (Character.isWhitespace(expression.charAt(pointer))) {
                 pointer++;
-            } else if (expression.charAt(pointer) == '+') {
-                pointer++;
-                ans = new CheckedAdd(ans, mulOrDiv());
-            } else if (expression.charAt(pointer) == '-') {
-                pointer++;
-                ans = new CheckedSubtract(ans, mulOrDiv());
+                continue;
+            }
+            int op = getOperator(0, 3);
+            if (op != -1) {
+                if (!(pointer == 0 || Character.isWhitespace(expression.charAt(pointer - 1))
+                        || expression.charAt(pointer - 1) == ')' || Character.isDigit(expression.charAt(pointer - 1)))) {
+                    throw new ParsingException(pointer);
+                }
+                pointer += 3;
+                if (pointer < expression.length() && expression.charAt(pointer) != '('
+                        && !Character.isWhitespace(expression.charAt(pointer)) && expression.charAt(pointer) != '-') {
+                    throw new ParsingException(pointer);
+                }
+                ans = opApplier.get(op).apply(ans, addOrSub());
             } else {
                 break;
             }
         }
         return ans;
     }
+
+    private TripleExpression addOrSub() throws MyExceptions {
+        TripleExpression ans = mulOrDiv();
+        while (pointer < expression.length()) {
+            if (Character.isWhitespace(expression.charAt(pointer))) {
+                pointer++;
+                continue;
+            }
+            int op = getOperator(1, 1);
+            if (op != -1) {
+                pointer++;
+                ans = opApplier.get(op).apply(ans, mulOrDiv());
+            } else {
+                break;
+            }
+        }
+        return ans;
+    }
+
 
     private TripleExpression mulOrDiv() throws MyExceptions {
         TripleExpression ans = unaryOperator();
         while (pointer < expression.length()) {
             if (Character.isWhitespace(expression.charAt(pointer))) {
                 pointer++;
-            } else if (expression.charAt(pointer) == '*') {
+                continue;
+            }
+            int op = getOperator(2, 1);
+            if (op != -1) {
                 pointer++;
-                ans = new CheckedMultiply(ans, unaryOperator());
-            } else if (expression.charAt(pointer) == '/') {
-                pointer++;
-                ans = new CheckedDivide(ans, unaryOperator());
+                ans = opApplier.get(op).apply(ans, unaryOperator());
             } else {
                 break;
             }
-        }
-        return ans;
-    }
-
-    private TripleExpression constOrVar() throws MyExceptions {
-        TripleExpression ans;
-        if (pointer < expression.length()
-                && Character.isWhitespace(expression.charAt(pointer))) {
-            pointer++;
-            return constOrVar();
-        } else if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
-            try {
-                ans = new Variable(Character.toString(expression.charAt(pointer)));
-            } catch (Exception e) {
-                throw new ParsingException(pointer);
-            }
-            pointer++;
-        } else  if (pointer < expression.length()){
-            while (pointer < expression.length() && Character.isWhitespace(expression.charAt(pointer))) {
-                pointer++;
-            }
-            if (pointer == expression.length()) {
-                throw new ParsingException(pointer);
-            }
-            int sp = pointer;
-            String number = "";
-            if (expression.charAt(pointer) == '-') {
-                pointer++;
-                number = "-";
-            }
-            while (pointer < expression.length() && (Character.isWhitespace(expression.charAt(pointer))
-                    || Character.isDigit(expression.charAt(pointer)))) {
-                if (Character.isDigit(expression.charAt(pointer))) {
-                    number += expression.charAt(pointer);
-                }
-                pointer++;
-            }
-            try {
-                ans = new Const(Integer.parseInt(number));
-            } catch (Exception e) {
-                throw new ParsingException(sp);
-            }
-        } else {
-            throw new ParsingException(pointer);
         }
         return ans;
     }
@@ -124,29 +134,18 @@ public class ExpressionParser implements Parser {
 
 
     private TripleExpression unaryOperator() throws MyExceptions {
-        if (pointer < expression.length()
-                && Character.isWhitespace(expression.charAt(pointer))) {
+        pointer = skipWhitespace(pointer);
+        if (pointer < expression.length() && expression.charAt(pointer) == '(') {
             pointer++;
-            return unaryOperator();
-        } else if (pointer < expression.length() && expression.charAt(pointer) == '(') {
-            pointer++;
-            TripleExpression ans = addOrSub();
-            while (pointer < expression.length()
-                    && Character.isWhitespace(expression.charAt(pointer))) {
-                pointer++;
-            }
+            TripleExpression ans = minOrMax();
             if (pointer >= expression.length() || expression.charAt(pointer) != ')') {
                 throw new ParsingException(pointer);
             }
             pointer++;
             return ans;
         } else if (pointer < expression.length() && expression.charAt(pointer) == '-') {
-            int sp = pointer;
-            while (sp + 1 < expression.length()
-                    && Character.isWhitespace(expression.charAt(sp + 1))) {
-                sp++;
-            }
-            if (sp + 1 < expression.length() && Character.isDigit(expression.charAt(sp + 1))) {
+            int sp = skipWhitespace(pointer + 1);
+            if (sp < expression.length() && Character.isDigit(expression.charAt(sp))) {
                 return constOrVar();
             } else {
                 pointer++;
@@ -156,10 +155,55 @@ public class ExpressionParser implements Parser {
             int pos = getFunctionIndex();
             if (pos != -1) {
                 pointer += functionsName[pos].length();
+                if (pointer < expression.length() && expression.charAt(pointer) != '('
+                        && !Character.isWhitespace(expression.charAt(pointer)) && expression.charAt(pointer) != '-') {
+                    throw new ParsingException(pointer);
+                }
                 return funcApplier.get(pos).apply(unaryOperator());
             } else {
                 return constOrVar();
             }
         }
+    }
+
+    private TripleExpression constOrVar() throws MyExceptions {
+        TripleExpression ans;
+        pointer = skipWhitespace(pointer);
+        if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
+            ans = new Variable(Character.toString(expression.charAt(pointer)), pointer);
+            pointer++;
+        } else if (pointer < expression.length()) {
+            int sp = pointer;
+            String number = "";
+            if (expression.charAt(pointer) == '-') {
+                number += expression.charAt(pointer);
+                pointer++;
+            }
+            while (pointer < expression.length()) {
+                if (Character.isWhitespace(expression.charAt(pointer))) {
+                    pointer++;
+                } else if (Character.isDigit(expression.charAt(pointer))) {
+                    number += expression.charAt(pointer);
+                    pointer++;
+                } else {
+                    break;
+                }
+            }
+            try {
+                ans = new Const(Integer.parseInt(number));
+            } catch (Exception e) {
+                throw new ParsingException(sp);
+            }
+        } else {
+            throw new ParsingException(pointer);
+        }
+        return ans;
+    }
+
+    private int skipWhitespace(int curPointer) {
+        while (curPointer < expression.length() && Character.isWhitespace(expression.charAt(curPointer))) {
+            curPointer++;
+        }
+        return curPointer;
     }
 }

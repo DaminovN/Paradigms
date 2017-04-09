@@ -1,10 +1,11 @@
 package expression.exceptions;
 
+import expression.Either;
 import expression.*;
 import expression.TripleExpression;
 import expression.Variable;
-import expression.parser.*;
 import expression.parser.ParserTest;
+import expression.parser.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
