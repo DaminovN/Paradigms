@@ -2,7 +2,7 @@ package expression.exceptions;
 
 import java.util.Arrays;
 
-import static expression.Util.*;
+import static expression.BaseTest.*;
 
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)

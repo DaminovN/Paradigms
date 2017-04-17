@@ -114,7 +114,7 @@ public class ExpressionParser implements Parser {
     }
 
 
-    private String[] functionsName = new String[]{"abs", "sqrt"};
+    private String[] functionsName = new String[]{"abs", "sqrt", "min", "max"};
     private ArrayList<UnaryOperator<TripleExpression>> funcApplier = new ArrayList<>();
     {
         funcApplier.add(x -> new CheckedAbs(x));
@@ -138,8 +138,10 @@ public class ExpressionParser implements Parser {
         if (pointer < expression.length() && expression.charAt(pointer) == '(') {
             pointer++;
             TripleExpression ans = minOrMax();
-            if (pointer >= expression.length() || expression.charAt(pointer) != ')') {
+            if (pointer >= expression.length()) {
                 throw new ParsingException(pointer);
+            } else if (expression.charAt(pointer) != ')') {
+                throw new ParsingException(pointer, "No Closing Paranthesis");
             }
             pointer++;
             return ans;
@@ -153,7 +155,7 @@ public class ExpressionParser implements Parser {
             }
         } else {
             int pos = getFunctionIndex();
-            if (pos != -1) {
+            if (pos != -1 && pos < 2) {
                 pointer += functionsName[pos].length();
                 if (pointer < expression.length() && expression.charAt(pointer) != '('
                         && !Character.isWhitespace(expression.charAt(pointer)) && expression.charAt(pointer) != '-') {
@@ -170,6 +172,12 @@ public class ExpressionParser implements Parser {
         TripleExpression ans;
         pointer = skipWhitespace(pointer);
         if (pointer < expression.length() && Character.isAlphabetic(expression.charAt(pointer))) {
+            int pos = getFunctionIndex();
+            if (pos != -1) {
+                throw new ParsingException(pointer, " Missing argument");
+            } else if (pointer + 1 < expression.length() && Character.isAlphabetic(expression.charAt(pointer + 1))) {
+                throw new ParsingException(pointer, " Undefined function");
+            }
             ans = new Variable(Character.toString(expression.charAt(pointer)), pointer);
             pointer++;
         } else if (pointer < expression.length()) {
@@ -192,10 +200,16 @@ public class ExpressionParser implements Parser {
             try {
                 ans = new Const(Integer.parseInt(number));
             } catch (Exception e) {
-                throw new ParsingException(sp);
+                if (number.length() > 1) {
+                    throw new OverflowException();
+                } else if (number.length() == 1){
+                    throw new ParsingException(sp);
+                } else {
+                    throw new ParsingException(sp, " Missing argument");
+                }
             }
         } else {
-            throw new ParsingException(pointer);
+            throw new ParsingException(pointer, " Missing argument");
         }
         return ans;
     }

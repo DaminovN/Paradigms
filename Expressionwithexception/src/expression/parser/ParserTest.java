@@ -1,5 +1,6 @@
 package expression.parser;
 
+import expression.BaseTest;
 import expression.Either;
 import expression.TripleExpression;
 
@@ -10,13 +11,11 @@ import java.util.function.LongBinaryOperator;
 import java.util.function.LongSupplier;
 import java.util.function.LongUnaryOperator;
 
-import static expression.Util.*;
-
 /**
  * @author Niyaz Nigmatullin
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
-public class ParserTest {
+public class ParserTest extends BaseTest {
     private final static int D = 5;
 
     private final static List<Integer> TEST_VALUES = new ArrayList<>();
@@ -30,11 +29,7 @@ public class ParserTest {
     protected final List<List<Op<LongBinaryOperator>>> levels = new ArrayList<>();
     protected List<Op<TExpression>> tests;
 
-    protected long total;
-
     protected ParserTest() {
-        checkAssert(getClass());
-
         unary.add(op("-", a -> -a));
 
         levels.add(list(
@@ -71,13 +66,7 @@ public class ParserTest {
         new ParserTest().run();
     }
 
-    protected void run() {
-        test();
-
-        System.out.println(total);
-        System.out.println("OK");
-    }
-
+    @Override
     protected void test() {
         for (final Op<TExpression> test : tests) {
             System.out.println("Testing: " + test.name);
@@ -104,11 +93,12 @@ public class ParserTest {
     }
 
     protected TripleExpression parse(final String expression, final boolean reparse) {
+        ops(expression.length());
         try {
             final ExpressionParser parser = new ExpressionParser();
             if (reparse) {
                 parser.parse(expression);
-                total++;
+                ops(expression.length());
             }
             return parser.parse(expression);
         } catch (final Exception e) {
@@ -122,11 +112,10 @@ public class ParserTest {
             if (i % 100 == 0) {
                 System.out.println("Completed " + i + " out of " + n);
             }
-            final int[] vars = new int[]{RNG.nextInt(), RNG.nextInt(), RNG.nextInt()};
+            final int[] vars = new int[]{random.nextInt(), random.nextInt(), random.nextInt()};
 
             final Test test = f.apply(vars, i);
             try {
-                total += test.expr.length();
                 check(vars, parse(test.expr, false), test.answer);
             } catch (final Throwable e) {
                 System.out.println("Failed test: " + test.expr);
@@ -136,9 +125,10 @@ public class ParserTest {
     }
 
     private void check(final int[] vars, final TripleExpression expression, final Either<Reason, Integer> answer) {
+        op();
         try {
             final int actual = expression.evaluate(vars[0], vars[1], vars[2]);
-            assertTrue(String.format("Error expected x = %d, y=%d, z=%d", vars[0], vars[1], vars[2]), !answer.isLeft());
+            assertTrue(String.format("Error expected for x=%d, y=%d, z=%d", vars[0], vars[1], vars[2]), !answer.isLeft());
             assertEquals(String.format("f(%d, %d, %d)\n%s", vars[0], vars[1], vars[2], expression), actual, (int) answer.getRight());
         } catch (final Exception e) {
             if (!answer.isLeft()) {
@@ -165,12 +155,12 @@ public class ParserTest {
         return p(generate(vars, randomInt(depth)));
     }
 
-    private static Test constOrVariable(final int[] vars) {
-        if (RNG.nextBoolean()) {
+    private Test constOrVariable(final int[] vars) {
+        if (random.nextBoolean()) {
             final int id = randomInt(3);
             return new Test("xyz".charAt(id) + "", Either.right(vars[id]));
         } else {
-            final int value = RNG.nextInt();
+            final int value = random.nextInt();
             return new Test(value + "", Either.right(value));
         }
     }
@@ -218,7 +208,7 @@ public class ParserTest {
         }
     }
 
-    private static boolean makeNewBranch(final int depth, final int coefficient) {
+    private boolean makeNewBranch(final int depth, final int coefficient) {
         return randomInt(depth + coefficient) < coefficient;
     }
 

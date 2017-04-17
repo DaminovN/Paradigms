@@ -2,8 +2,6 @@ package expression.exceptions;
 
 import java.util.Arrays;
 
-import static expression.Util.op;
-
 /**
  * @author Georgiy Korneev (kgeorgiy@kgeorgiy.info)
  */
